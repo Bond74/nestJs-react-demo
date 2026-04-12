@@ -1,0 +1,12 @@
+# Local dependencies
+node_modules/
+
+# Build artifacts
+dist/
+
+# Test outputs
+coverage/
+
+# Local configuration
+.env
+*.local
