@@ -1,0 +1,31 @@
+### Users
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "name": "John Smith",
+    "email": "test2@ggg.com"
+}
+
+### Products
+
+POST http://localhost:3000/products
+Content-Type: application/json
+
+{
+    "name": "Laptop Dell XPS 13",
+    "price": 1299.99
+}
+
+### Orders
+
+POST http://localhost:3000/orders
+Content-Type: application/json
+
+{
+    "userId": "69dbe533467404b8eec94ebd",
+    "productId": "69dbe9f9a6a748ae723329ab",
+    "quantity": 1
+}
+
