@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import api from './api';
-import './App.css';
+import { useState, useEffect } from "react";
+import api from "./api";
+import "./App.css";
 
 interface Product {
   _id: string;
@@ -26,12 +26,12 @@ function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
-  
+
   // Forms state
-  const [newProductName, setNewProductName] = useState('');
-  const [newProductPrice, setNewProductPrice] = useState('');
-  const [selectedProductId, setSelectedProductId] = useState('');
-  const [orderQuantity, setOrderQuantity] = useState('1');
+  const [newProductName, setNewProductName] = useState("");
+  const [newProductPrice, setNewProductPrice] = useState("");
+  const [selectedProductId, setSelectedProductId] = useState("");
+  const [orderQuantity, setOrderQuantity] = useState("1");
 
   useEffect(() => {
     fetchProducts();
@@ -42,34 +42,34 @@ function App() {
 
   const fetchProducts = async () => {
     try {
-      const res = await api.get('/products');
+      const res = await api.get("/products");
       setProducts(res.data);
     } catch (err) {
-      console.error('Error fetching products', err);
+      console.error("Error fetching products", err);
     }
   };
 
   const fetchOrders = async () => {
     try {
-      const res = await api.get('/orders');
+      const res = await api.get("/orders");
       setOrders(res.data);
     } catch (err) {
-      console.error('Error fetching orders', err);
+      console.error("Error fetching orders", err);
     }
   };
 
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/products', {
+      await api.post("/products", {
         name: newProductName,
         price: Number(newProductPrice),
       });
-      setNewProductName('');
-      setNewProductPrice('');
+      setNewProductName("");
+      setNewProductPrice("");
       fetchProducts();
     } catch (err) {
-      alert('Error creating product');
+      alert("Error creating product");
     }
   };
 
@@ -79,14 +79,16 @@ function App() {
     try {
       setLoading(true);
       // Hardcoded userId for demo
-      const userId = '660000000000000000000001'; 
-      await api.post('/orders', {
+      const userId = "660000000000000000000001";
+      await api.post("/orders", {
         userId,
-        items: [{ productId: selectedProductId, quantity: Number(orderQuantity) }],
+        items: [
+          { productId: selectedProductId, quantity: Number(orderQuantity) },
+        ],
       });
       fetchOrders();
     } catch (err) {
-      alert('Error creating order');
+      alert("Error creating order");
     } finally {
       setLoading(false);
     }
@@ -158,7 +160,7 @@ function App() {
             required
           />
           <button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Place Order'}
+            {loading ? "Creating..." : "Place Order"}
           </button>
         </form>
       </section>
@@ -177,7 +179,9 @@ function App() {
             {orders.map((o) => (
               <tr key={o._id}>
                 <td>{o._id}</td>
-                <td className={`status-${o.status}`}>{o.status.toUpperCase()}</td>
+                <td className={`status-${o.status}`}>
+                  {o.status.toUpperCase()}
+                </td>
                 <td>{new Date(o.createdAt).toLocaleString()}</td>
               </tr>
             ))}
@@ -191,7 +195,7 @@ function App() {
 }
 
 function OrderDetailSection() {
-  const [orderId, setOrderId] = useState('');
+  const [orderId, setOrderId] = useState("");
   const [order, setOrder] = useState<any>(null);
 
   const fetchDetail = async () => {
@@ -200,14 +204,14 @@ function OrderDetailSection() {
       const res = await api.get(`/orders/${orderId}`);
       setOrder(res.data);
     } catch (err) {
-      alert('Order not found or error fetching details');
+      alert("Order not found or error fetching details");
     }
   };
 
   return (
     <section>
       <h2>🔍 Order Details (Aggregation)</h2>
-      <div style={{ display: 'flex', gap: '1rem' }}>
+      <div style={{ display: "flex", gap: "1rem" }}>
         <input
           placeholder="Enter Order ID"
           value={orderId}
@@ -217,14 +221,19 @@ function OrderDetailSection() {
       </div>
 
       {order && (
-        <div style={{ marginTop: '1rem', padding: '1rem', background: '#f9f9f9' }}>
+        <div
+          style={{ marginTop: "1rem", padding: "1rem", background: "#f9f9f9" }}
+        >
           <h3>Order {order._id}</h3>
-          <p>Status: <strong>{order.status}</strong></p>
-          <h4>Items (Joined via $lookup):</h4>
+          <p>
+            Status: <strong>{order.status}</strong>
+          </p>
+          <h4>Items:</h4>
           <ul>
             {order.items.map((item: any, idx: number) => (
               <li key={idx}>
-                <strong>{item.product.name}</strong> - Quantity: {item.quantity} - Price: ${item.product.price}
+                <strong>{item.product.name}</strong> - Quantity: {item.quantity}{" "}
+                - Price: ${item.product.price}
               </li>
             ))}
           </ul>

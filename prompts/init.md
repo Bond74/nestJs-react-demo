@@ -9,7 +9,7 @@ Build a small but realistic “Order & Notification System” that demonstrates:
 - Event-driven communication with RabbitMQ
 - Clean architecture and best practices in NestJS
 
-The implementation should be **concise but production-like**, suitable for a technical interview demo, and achievable within **1–2 days of development**.
+The implementation should be **concise but production-like**
 
 ---
 
@@ -189,13 +189,6 @@ src/
     logger/
   config/
 ```
-
----
-
-## 🐳 Optional (if time permits)
-
-- Docker Compose for MongoDB + RabbitMQ
-- Swagger API docs
 
 ---
 

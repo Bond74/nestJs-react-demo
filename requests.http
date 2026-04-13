@@ -29,3 +29,6 @@ Content-Type: application/json
     "quantity": 1
 }
 
+###
+GET http://localhost:3000/orders/69dbee1ebf30a1fc5aec658f
+Content-Type: application/json
