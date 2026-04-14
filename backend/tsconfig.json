@@ -20,7 +20,7 @@
     "paths": {
       "src/*": ["src/*"]
     },
-    "ignoreDeprecations": "6.0",
-    "types": ["node"]    
+    "ignoreDeprecations": "5.0",
+    "types": ["node", "jest"]
   }
 }
