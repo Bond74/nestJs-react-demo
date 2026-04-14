@@ -151,7 +151,10 @@ function App() {
         ) : (
           <div>
             <p>
-              Logged in as: <strong>{user.name} ({user.email})</strong>
+              Logged in as:{' '}
+              <strong>
+                {user.name} ({user.email})
+              </strong>
             </p>
             <button onClick={handleLogout}>Logout</button>
           </div>
