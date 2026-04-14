@@ -7,8 +7,8 @@ POST http://localhost:3000/users
 Content-Type: application/json
 
 {
-    "name": "John Smith",
-    "email": "test2@ggg.com"
+    "name": "Wiktor Kawa",
+    "email": "aaa1@ggg.com"
 }
 
 ### Create User
