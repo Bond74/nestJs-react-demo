@@ -38,9 +38,26 @@ describe('Orders (e2e)', () => {
   });
 
   it('should create an order and eventually process it', async () => {
-    const userId = new Types.ObjectId().toHexString();
+    // 0. Create a user first
+    const userEmail = `test-${Date.now()}@example.com`;
+    await request(app.getHttpServer())
+      .post('/users')
+      .send({
+        name: 'Test User',
+        email: userEmail,
+      })
+      .expect(201);
 
-    // 0. Create a product first
+    // 1. Authenticate to get token
+    const authRes = await request(app.getHttpServer())
+      .post('/users/auth')
+      .send({ email: userEmail })
+      .expect(201);
+
+    const token = authRes.body.access_token;
+    const userId = authRes.body.user.id;
+
+    // 2. Create a product
     const createProductRes = await request(app.getHttpServer())
       .post('/products')
       .send({
@@ -61,25 +78,27 @@ describe('Orders (e2e)', () => {
       ],
     };
 
-    // 1. Create an order
+    // 3. Create an order
     const createRes = await request(app.getHttpServer())
       .post('/orders')
+      .set('Authorization', `Bearer ${token}`)
       .send(createOrderDto)
       .expect(201);
 
     const orderId = createRes.body._id;
 
-    // 2. Ensure the order is created with status "pending"
+    // 4. Ensure the order is created with status "pending"
     expect(createRes.body.status).toBe('pending');
 
-    // 3. Check in loop during 5 sec that status changed to "processed"
+    // 5. Check in loop during 10 sec that status changed to "processed"
     let status = 'pending';
     const startTime = Date.now();
-    const timeout = 10000; // Increased timeout for slower environments
+    const timeout = 10000;
 
     while (status !== 'processed' && Date.now() - startTime < timeout) {
       const getRes = await request(app.getHttpServer())
         .get(`/orders/${orderId}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(200);
       status = getRes.body.status;
       if (status === 'processed') break;
@@ -87,5 +106,5 @@ describe('Orders (e2e)', () => {
     }
 
     expect(status).toBe('processed');
-  }, 20000);
+  }, 30000);
 });

@@ -6,6 +6,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   async create(@Body() createOrderDto: any) {
     return this.ordersService.create(createOrderDto);

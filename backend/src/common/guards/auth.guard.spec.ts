@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthGuard } from './auth.guard';
 import { UsersService } from '../../modules/users/users.service';
+import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException, ExecutionContext } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 
@@ -8,10 +9,16 @@ jest.mock('jsonwebtoken');
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let usersService: UsersService;
 
   const mockUsersService = {
     findById: jest.fn(),
+  };
+
+  const mockConfigService = {
+    get: jest.fn().mockReturnValue('test-secret'),
   };
 
   const mockExecutionContext = {
@@ -21,12 +28,17 @@ describe('AuthGuard', () => {
   } as unknown as ExecutionContext;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthGuard,
         {
           provide: UsersService,
           useValue: mockUsersService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();
@@ -69,11 +81,26 @@ describe('AuthGuard', () => {
     ).mockReturnValue({
       headers: { authorization: 'Bearer valid.token.here' },
     });
-    (jwt.decode as jest.Mock).mockReturnValue({ sub: 'user-id' });
+    (jwt.verify as jest.Mock).mockReturnValue({ sub: 'user-id' });
     mockUsersService.findById.mockResolvedValue(null);
 
     await expect(guard.canActivate(mockExecutionContext)).rejects.toThrow(
       new UnauthorizedException('User not found'),
+    );
+  });
+
+  it('should throw UnauthorizedException if token verification fails', async () => {
+    (
+      mockExecutionContext.switchToHttp().getRequest as jest.Mock
+    ).mockReturnValue({
+      headers: { authorization: 'Bearer invalid.token.here' },
+    });
+    (jwt.verify as jest.Mock).mockImplementation(() => {
+      throw new Error('invalid signature');
+    });
+
+    await expect(guard.canActivate(mockExecutionContext)).rejects.toThrow(
+      new UnauthorizedException('Invalid token'),
     );
   });
 
@@ -83,7 +110,7 @@ describe('AuthGuard', () => {
     ).mockReturnValue({
       headers: { authorization: 'Bearer valid.token.here' },
     });
-    (jwt.decode as jest.Mock).mockReturnValue({ sub: 'user-id' });
+    (jwt.verify as jest.Mock).mockReturnValue({ sub: 'user-id' });
     mockUsersService.findById.mockResolvedValue({
       _id: 'user-id',
       isActive: false,
@@ -102,7 +129,7 @@ describe('AuthGuard', () => {
     (
       mockExecutionContext.switchToHttp().getRequest as jest.Mock
     ).mockReturnValue(request);
-    (jwt.decode as jest.Mock).mockReturnValue({ sub: 'user-id' });
+    (jwt.verify as jest.Mock).mockReturnValue({ sub: 'user-id' });
     const user = { _id: 'user-id', isActive: true };
     mockUsersService.findById.mockResolvedValue(user);
 

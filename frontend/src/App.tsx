@@ -22,10 +22,18 @@ interface Order {
   createdAt: string;
 }
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loginEmail, setLoginEmail] = useState('');
 
   // Forms state
   const [newProductName, setNewProductName] = useState('');
@@ -34,11 +42,42 @@ function App() {
   const [orderQuantity, setOrderQuantity] = useState('1');
 
   useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
     fetchProducts();
-    fetchOrders();
-    const interval = setInterval(fetchOrders, 3000); // Poll for status changes
-    return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchOrders();
+      const interval = setInterval(fetchOrders, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await api.post('/users/auth', { email: loginEmail });
+      const { access_token, user: userData } = res.data;
+      localStorage.setItem('access_token', access_token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      setLoginEmail('');
+    } catch (err) {
+      alert('Login failed. Check your email or ensure the user exists.');
+      console.error(err);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setOrders([]);
+  };
 
   const fetchProducts = async () => {
     try {
@@ -75,13 +114,11 @@ function App() {
 
   const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProductId) return;
+    if (!selectedProductId || !user) return;
     try {
       setLoading(true);
-      // Hardcoded userId for demo
-      const userId = '660000000000000000000001';
       await api.post('/orders', {
-        userId,
+        userId: user.id,
         items: [
           { productId: selectedProductId, quantity: Number(orderQuantity) },
         ],
@@ -97,6 +134,29 @@ function App() {
   return (
     <div className="container">
       <h1>📦 Order & Notification Demo</h1>
+
+      <section>
+        <h2>🔑 Authentication</h2>
+        {!user ? (
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={loginEmail}
+              onChange={(e) => setLoginEmail(e.target.value)}
+              required
+            />
+            <button type="submit">Login</button>
+          </form>
+        ) : (
+          <div>
+            <p>
+              Logged in as: <strong>{user.name} ({user.email})</strong>
+            </p>
+            <button onClick={handleLogout}>Logout</button>
+          </div>
+        )}
+      </section>
 
       <section>
         <h2>🛠 Product Management</h2>
@@ -137,59 +197,63 @@ function App() {
         </table>
       </section>
 
-      <section>
-        <h2>🛒 Create Order</h2>
-        <form onSubmit={handleCreateOrder}>
-          <select
-            value={selectedProductId}
-            onChange={(e) => setSelectedProductId(e.target.value)}
-            required
-          >
-            <option value="">Select a product</option>
-            {products.map((p) => (
-              <option key={p._id} value={p._id}>
-                {p.name} (${p.price})
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            min="1"
-            value={orderQuantity}
-            onChange={(e) => setOrderQuantity(e.target.value)}
-            required
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Place Order'}
-          </button>
-        </form>
-      </section>
+      {user && (
+        <>
+          <section>
+            <h2>🛒 Create Order</h2>
+            <form onSubmit={handleCreateOrder}>
+              <select
+                value={selectedProductId}
+                onChange={(e) => setSelectedProductId(e.target.value)}
+                required
+              >
+                <option value="">Select a product</option>
+                {products.map((p) => (
+                  <option key={p._id} value={p._id}>
+                    {p.name} (${p.price})
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                min="1"
+                value={orderQuantity}
+                onChange={(e) => setOrderQuantity(e.target.value)}
+                required
+              />
+              <button type="submit" disabled={loading}>
+                {loading ? 'Creating...' : 'Place Order'}
+              </button>
+            </form>
+          </section>
 
-      <section>
-        <h2>📋 Orders List</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((o) => (
-              <tr key={o._id}>
-                <td>{o._id}</td>
-                <td className={`status-${o.status}`}>
-                  {o.status.toUpperCase()}
-                </td>
-                <td>{new Date(o.createdAt).toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+          <section>
+            <h2>📋 Orders List</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map((o) => (
+                  <tr key={o._id}>
+                    <td>{o._id}</td>
+                    <td className={`status-${o.status}`}>
+                      {o.status.toUpperCase()}
+                    </td>
+                    <td>{new Date(o.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
 
-      <OrderDetailSection />
+          <OrderDetailSection />
+        </>
+      )}
     </div>
   );
 }

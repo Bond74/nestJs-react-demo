@@ -4,12 +4,16 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { UsersService } from '../../modules/users/users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -22,9 +26,11 @@ export class AuthGuard implements CanActivate {
     const token = authHeader.split(' ')[1];
 
     try {
-      // In a real app, you would verify with a secret: jwt.verify(token, 'secret')
-      // For this demo, we'll just decode it
-      const decoded = jwt.decode(token) as { sub: string; email: string };
+      const jwtSecret = this.configService.get<string>('JWT_SECRET');
+      const decoded = jwt.verify(token, jwtSecret) as {
+        sub: string;
+        email: string;
+      };
 
       if (!decoded || !decoded.sub) {
         throw new UnauthorizedException('Invalid token');
@@ -44,6 +50,9 @@ export class AuthGuard implements CanActivate {
       request.user = user;
       return true;
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException('Invalid token');
     }
   }

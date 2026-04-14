@@ -1,4 +1,7 @@
-### Users
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWRiZThkMWE2YTc0OGFlNzIzMzI5YTciLCJlbWFpbCI6InRlc3QyQGdnZy5jb20iLCJpYXQiOjE3NzYxOTI3MzksImV4cCI6MTc3NjE5NjMzOX0.W8G-rYASchcl0L8l4tn4bju_qMlwD3mq84enm0c2KzA
+## Users API
+
+### Create User
 
 POST http://localhost:3000/users
 Content-Type: application/json
@@ -8,7 +11,27 @@ Content-Type: application/json
     "email": "test2@ggg.com"
 }
 
-### Products
+### Create User
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "name": "John Smith",
+    "email": "test2@ggg.com"
+}
+
+### Get Auth token
+POST http://localhost:3000/users/auth
+Content-Type: application/json
+
+{
+    "email": "test2@ggg.com"
+}
+
+## Products API
+
+### Create Product
 
 POST http://localhost:3000/products
 Content-Type: application/json
@@ -22,6 +45,7 @@ Content-Type: application/json
 
 POST http://localhost:3000/orders
 Content-Type: application/json
+Authorization: {{token}}
 
 {
     "userId": "69dbe533467404b8eec94ebd",
@@ -32,3 +56,4 @@ Content-Type: application/json
 ###
 GET http://localhost:3000/orders/69dbee1ebf30a1fc5aec658f
 Content-Type: application/json
+Authorization: {{token}}

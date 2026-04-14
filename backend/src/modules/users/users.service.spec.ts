@@ -21,6 +21,9 @@ describe('UsersService', () => {
   (mockUserModel as any).findById = jest.fn().mockReturnValue({
     exec: jest.fn().mockResolvedValue({}),
   });
+  (mockUserModel as any).findOne = jest.fn().mockReturnValue({
+    exec: jest.fn().mockResolvedValue({}),
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -57,6 +60,14 @@ describe('UsersService', () => {
       const id = 'test-id';
       await service.findById(id);
       expect(model.findById).toHaveBeenCalledWith(id);
+    });
+  });
+
+  describe('findByEmail', () => {
+    it('should return a user by email', async () => {
+      const email = 'test@example.com';
+      await service.findByEmail(email);
+      expect(model.findOne).toHaveBeenCalledWith({ email });
     });
   });
 });
