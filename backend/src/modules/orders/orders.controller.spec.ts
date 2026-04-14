@@ -1,0 +1,54 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { OrdersController } from './orders.controller';
+import { OrdersService } from './orders.service';
+
+describe('OrdersController', () => {
+  let controller: OrdersController;
+  let service: OrdersService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [OrdersController],
+      providers: [
+        {
+          provide: OrdersService,
+          useValue: {
+            create: jest.fn().mockResolvedValue({}),
+            findAll: jest.fn().mockResolvedValue([]),
+            findOneEnriched: jest.fn().mockResolvedValue({}),
+          },
+        },
+      ],
+    }).compile();
+
+    controller = module.get<OrdersController>(OrdersController);
+    service = module.get<OrdersService>(OrdersService);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+
+  describe('create', () => {
+    it('should call ordersService.create', async () => {
+      const dto = { userId: '123', items: [] };
+      await controller.create(dto);
+      expect(service.create).toHaveBeenCalledWith(dto);
+    });
+  });
+
+  describe('findAll', () => {
+    it('should call ordersService.findAll', async () => {
+      await controller.findAll();
+      expect(service.findAll).toHaveBeenCalled();
+    });
+  });
+
+  describe('findOne', () => {
+    it('should call ordersService.findOneEnriched', async () => {
+      const id = 'test-id';
+      await controller.findOne(id);
+      expect(service.findOneEnriched).toHaveBeenCalledWith(id);
+    });
+  });
+});
