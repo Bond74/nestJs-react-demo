@@ -22,7 +22,9 @@ form {
   max-width: 400px;
 }
 
-input, select, button {
+input,
+select,
+button {
   padding: 0.5rem;
   font-size: 1rem;
 }
@@ -45,7 +47,8 @@ table {
   margin-top: 1rem;
 }
 
-th, td {
+th,
+td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
