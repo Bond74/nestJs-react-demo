@@ -1,5 +1,6 @@
-import { Controller, Post, Get, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
+import { AuthGuard } from '../../common/guards/auth.guard';
 
 @Controller('orders')
 export class OrdersController {
@@ -10,11 +11,13 @@ export class OrdersController {
     return this.ordersService.create(createOrderDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   async findAll() {
     return this.ordersService.findAll();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.ordersService.findOneEnriched(id);
