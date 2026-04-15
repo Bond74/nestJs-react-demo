@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ClientProxy } from '@nestjs/microservices';
 import { Order } from './order.schema';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -11,7 +12,7 @@ export class OrdersService {
     @Inject('ORDER_SERVICE') private client: ClientProxy,
   ) {}
 
-  async create(createOrderDto: any): Promise<Order> {
+  async create(createOrderDto: CreateOrderDto): Promise<Order> {
     const newOrder = new this.orderModel(createOrderDto);
     const savedOrder = await newOrder.save();
 

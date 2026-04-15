@@ -1,0 +1,27 @@
+import {
+  IsArray,
+  ValidateNested,
+  IsInt,
+  Min,
+  IsMongoId,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class OrderItemDto {
+  @IsMongoId()
+  productId: string;
+
+  @IsInt()
+  @Min(1)
+  quantity: number;
+}
+
+export class CreateOrderDto {
+  @IsMongoId()
+  userId: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => OrderItemDto)
+  items: OrderItemDto[];
+}

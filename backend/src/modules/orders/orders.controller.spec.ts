@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 describe('OrdersController', () => {
   let controller: OrdersController;
@@ -35,7 +36,10 @@ describe('OrdersController', () => {
 
   describe('create', () => {
     it('should call ordersService.create', async () => {
-      const dto = { userId: '123', items: [] };
+      const dto: CreateOrderDto = {
+        userId: '507f1f77bcf86cd799439011',
+        items: [{ productId: '507f1f77bcf86cd799439012', quantity: 2 }],
+      };
       await controller.create(dto);
       expect(service.create).toHaveBeenCalledWith(dto);
     });

@@ -3,6 +3,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { OrdersService } from './orders.service';
 import { Order } from './order.schema';
 import { Types } from 'mongoose';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 describe('OrdersService', () => {
   let service: OrdersService;
@@ -11,12 +12,12 @@ describe('OrdersService', () => {
 
   const mockOrder = {
     _id: new Types.ObjectId().toHexString(),
-    userId: 'user123',
+    userId: '507f1f77bcf86cd799439011',
     items: [],
     status: 'pending',
     save: jest.fn().mockResolvedValue({
       _id: 'saved-id',
-      userId: 'user123',
+      userId: '507f1f77bcf86cd799439011',
       items: [],
       status: 'pending',
     }),
@@ -61,7 +62,10 @@ describe('OrdersService', () => {
 
   describe('create', () => {
     it('should create and save an order, then emit event', async () => {
-      const dto = { userId: 'user123', items: [] };
+      const dto: CreateOrderDto = {
+        userId: '507f1f77bcf86cd799439011',
+        items: [{ productId: '507f1f77bcf86cd799439012', quantity: 1 }],
+      };
       const result = await service.create(dto);
 
       expect(model).toHaveBeenCalledWith(dto);

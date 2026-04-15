@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -8,7 +9,7 @@ export class OrdersController {
 
   @UseGuards(AuthGuard)
   @Post()
-  async create(@Body() createOrderDto: any) {
+  async create(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
   }
 
