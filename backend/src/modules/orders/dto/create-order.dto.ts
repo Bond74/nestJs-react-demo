@@ -17,9 +17,6 @@ export class OrderItemDto {
 }
 
 export class CreateOrderDto {
-  @IsMongoId()
-  userId: string;
-
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)

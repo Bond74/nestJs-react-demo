@@ -12,8 +12,8 @@ export class OrdersService {
     @Inject('ORDER_SERVICE') private client: ClientProxy,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const newOrder = new this.orderModel(createOrderDto);
+  async create(userId: string, createOrderDto: CreateOrderDto): Promise<Order> {
+    const newOrder = new this.orderModel({ ...createOrderDto, userId });
     const savedOrder = await newOrder.save();
 
     // Publish to RabbitMQ
@@ -22,14 +22,19 @@ export class OrdersService {
     return savedOrder;
   }
 
-  async findAll(): Promise<Order[]> {
-    return this.orderModel.find().sort({ createdAt: -1 }).exec();
+  async findAll(userId: string): Promise<Order[]> {
+    return this.orderModel.find({ userId }).sort({ createdAt: -1 }).exec();
   }
 
   // MongoDB Aggregation with $lookup
-  async findOneEnriched(id: string): Promise<any> {
+  async findOneEnriched(id: string, userId: string): Promise<any> {
     const results = await this.orderModel.aggregate([
-      { $match: { _id: new Types.ObjectId(id) } },
+      {
+        $match: {
+          _id: new Types.ObjectId(id),
+          userId: new Types.ObjectId(userId),
+        },
+      },
       {
         $unwind: '$items',
       },

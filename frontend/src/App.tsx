@@ -118,7 +118,6 @@ function App() {
     try {
       setLoading(true);
       await api.post('/orders', {
-        userId: user.id,
         items: [
           { productId: selectedProductId, quantity: Number(orderQuantity) },
         ],

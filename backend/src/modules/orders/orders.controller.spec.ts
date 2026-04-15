@@ -35,28 +35,33 @@ describe('OrdersController', () => {
   });
 
   describe('create', () => {
-    it('should call ordersService.create', async () => {
+    it('should call ordersService.create with userId from request', async () => {
+      const userId = '507f1f77bcf86cd799439011';
       const dto: CreateOrderDto = {
-        userId: '507f1f77bcf86cd799439011',
         items: [{ productId: '507f1f77bcf86cd799439012', quantity: 2 }],
       };
-      await controller.create(dto);
-      expect(service.create).toHaveBeenCalledWith(dto);
+      const req = { user: { _id: userId } };
+      await controller.create(req, dto);
+      expect(service.create).toHaveBeenCalledWith(userId, dto);
     });
   });
 
   describe('findAll', () => {
-    it('should call ordersService.findAll', async () => {
-      await controller.findAll();
-      expect(service.findAll).toHaveBeenCalled();
+    it('should call ordersService.findAll with userId from request', async () => {
+      const userId = '507f1f77bcf86cd799439011';
+      const req = { user: { _id: userId } };
+      await controller.findAll(req);
+      expect(service.findAll).toHaveBeenCalledWith(userId);
     });
   });
 
   describe('findOne', () => {
-    it('should call ordersService.findOneEnriched', async () => {
+    it('should call ordersService.findOneEnriched with id and userId', async () => {
       const id = 'test-id';
-      await controller.findOne(id);
-      expect(service.findOneEnriched).toHaveBeenCalledWith(id);
+      const userId = '507f1f77bcf86cd799439011';
+      const req = { user: { _id: userId } };
+      await controller.findOne(req, id);
+      expect(service.findOneEnriched).toHaveBeenCalledWith(id, userId);
     });
   });
 });

@@ -62,13 +62,13 @@ describe('OrdersService', () => {
 
   describe('create', () => {
     it('should create and save an order, then emit event', async () => {
+      const userId = '507f1f77bcf86cd799439011';
       const dto: CreateOrderDto = {
-        userId: '507f1f77bcf86cd799439011',
         items: [{ productId: '507f1f77bcf86cd799439012', quantity: 1 }],
       };
-      const result = await service.create(dto);
+      const result = await service.create(userId, dto);
 
-      expect(model).toHaveBeenCalledWith(dto);
+      expect(model).toHaveBeenCalledWith({ ...dto, userId });
       expect(mockOrder.save).toHaveBeenCalled();
       expect(client.emit).toHaveBeenCalledWith('order_created', {
         orderId: 'saved-id',
@@ -78,9 +78,10 @@ describe('OrdersService', () => {
   });
 
   describe('findAll', () => {
-    it('should return all orders', async () => {
-      await service.findAll();
-      expect(model.find).toHaveBeenCalled();
+    it('should return all orders for a user', async () => {
+      const userId = '507f1f77bcf86cd799439011';
+      await service.findAll(userId);
+      expect(model.find).toHaveBeenCalledWith({ userId });
     });
   });
 
