@@ -17,6 +17,8 @@ interface OrderItem {
 interface Order {
   _id: string;
   userId: string;
+  userName: string;
+  userEmail: string;
   status: string;
   items: OrderItem[];
   createdAt: string;
@@ -293,6 +295,12 @@ function OrderDetailSection() {
           <h3>Order {order._id}</h3>
           <p>
             Status: <strong>{order.status}</strong>
+          </p>
+          <p>
+            Buyer:{' '}
+            <strong>
+              {order.userName} ({order.userEmail})
+            </strong>
           </p>
           <ul>
             {order.items.map((item: OrderItem, idx: number) => (

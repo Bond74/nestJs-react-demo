@@ -1,4 +1,4 @@
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWRiZThkMWE2YTc0OGFlNzIzMzI5YTciLCJlbWFpbCI6InRlc3QyQGdnZy5jb20iLCJpYXQiOjE3NzYxOTI3MzksImV4cCI6MTc3NjE5NjMzOX0.W8G-rYASchcl0L8l4tn4bju_qMlwD3mq84enm0c2KzA
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWRlOTlhMzBiNWI2YjUyMTVlN2Y4MTciLCJlbWFpbCI6ImFhYTFAZ2dnLmNvbSIsImlhdCI6MTc3NjI0NTg0NSwiZXhwIjoxNzc2MjQ5NDQ1fQ.UxJ4PygevQusOA_e2yVxEgRyO6ZPpbmt50jpd1VS9_E
 ## Users API
 
 ### Create User
@@ -7,18 +7,8 @@ POST http://localhost:3000/users
 Content-Type: application/json
 
 {
-    "name": "Wiktor Kawa",
-    "email": "aaa1@ggg.com"
-}
-
-### Create User
-
-POST http://localhost:3000/users
-Content-Type: application/json
-
-{
-    "name": "John Smith",
-    "email": "test2@ggg.com"
+    "name": "Frank Miller",
+    "email": "test3@ggg.com"
 }
 
 ### Get Auth token
@@ -26,7 +16,7 @@ POST http://localhost:3000/users/auth
 Content-Type: application/json
 
 {
-    "email": "test2@ggg.com"
+    "email": "aaa1@ggg.com"
 }
 
 ## Products API
@@ -37,8 +27,8 @@ POST http://localhost:3000/products
 Content-Type: application/json
 
 {
-    "name": "Laptop Dell XPS 13",
-    "price": 1299.99
+    "name": "Laptop Lenovo ThinkPad X1",
+    "price": 1109.00
 }
 
 ### Orders
@@ -48,12 +38,15 @@ Content-Type: application/json
 Authorization: {{token}}
 
 {
-    "userId": "69dbe533467404b8eec94ebd",
-    "productId": "69dbe9f9a6a748ae723329ab",
-    "quantity": 1
+    "userId": "69de99a30b5b6b5215e7f817",
+    "items": [
+     {
+        "productId": "69dbe9f9a6a748ae723329ab",
+        "quantity": 1
+     }]
 }
 
 ###
-GET http://localhost:3000/orders/69dbee1ebf30a1fc5aec658f
+GET http://localhost:3000/orders/69df58cf0f1cdfd19bf7cbe7
 Content-Type: application/json
 Authorization: {{token}}

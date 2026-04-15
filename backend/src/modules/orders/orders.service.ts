@@ -64,6 +64,28 @@ export class OrdersService {
           },
         },
       },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userDetails',
+        },
+      },
+      {
+        $unwind: '$userDetails',
+      },
+      {
+        $addFields: {
+          userName: '$userDetails.name',
+          userEmail: '$userDetails.email',
+        },
+      },
+      {
+        $project: {
+          userDetails: 0,
+        },
+      },
     ]);
 
     if (!results || results.length === 0) {
